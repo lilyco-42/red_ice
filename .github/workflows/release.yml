@@ -17,13 +17,24 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             rust_target: x86_64-unknown-linux-gnu
-            binary_name: red_ice-x86_64
+            binary_name: red_ice-x86_64-linux
+            zig_target: x86_64-linux-gnu
           - target: aarch64-unknown-linux-gnu
             rust_target: aarch64-unknown-linux-gnu
-            binary_name: red_ice-arm64
+            binary_name: red_ice-arm64-linux
+            zig_target: aarch64-linux-gnu
           - target: arm-unknown-linux-gnueabihf
             rust_target: armv7-unknown-linux-gnueabihf
-            binary_name: red_ice-armv7
+            binary_name: red_ice-armv7linux
+            zig_target: armv7_linux_gnueabihf
+          - target: x86_64-pc-windows-msvc
+            rust_target: x86_64-pc-windows-msvc
+            binary_name: red_ice-x64-windows.exe
+            zig_target: x86_64-windows
+          - target: aarch64-pc-windows-msvc
+            rust_target: aarch64-pc-windows-msvc
+            binary_name: red_ice-arm64-windows.exe
+            zig_target: aarch64-windows
 
     steps:
       - name: Checkout code
@@ -34,17 +45,17 @@ jobs:
         with:
           targets: ${{ matrix.rust_target }}
 
-      - name: Install cross
-        run: cargo install cross
+      - name: Install cargo-zigbuild
+        run: cargo install cargo-zigbuild
 
       - name: Build release
-        run: cross build --release --manifest-path Cargo.toml -p red_ice --target ${{ matrix.target }}
+        run: cargo zigbuild --release --manifest-path Cargo.toml -p red_ice --target ${{ matrix.zig_target }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.binary_name }}
-          path: target/${{ matrix.target }}/release/red_ice-cli
+          path: target/${{ matrix.zig_target }}/release/*/red_ice*
           retention-days: 5
 
   create-release:
@@ -77,9 +88,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: red_ice-x86_64
-          - name: red_ice-arm64
-          - name: red_ice-armv7
+          - name: red_ice-x86_64-linux
+          - name: red_ice-arm64-linux
+          - name: red_ice-armv7linux
+          - name: red_ice-x64-windows.exe
+          - name: red_ice-arm64-windows.exe
 
     steps:
       - name: Download artifact
