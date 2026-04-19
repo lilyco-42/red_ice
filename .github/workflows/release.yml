@@ -1,14 +1,11 @@
 name: Build and Release
-
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,22 +18,17 @@ jobs:
             binary_name: red_ice-arm64-linux
           - target: arm-unknown-linux-gnueabihf
             binary_name: red_ice-armv7-linux
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-
       - name: Install cross
         run: cargo install cross
-
       - name: Build release
         run: cross build --release --manifest-path Cargo.toml -p red_ice --target ${{ matrix.target }}
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -47,16 +39,12 @@ jobs:
   create-release:
     needs: build
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-
     steps:
-      - name: Create tag
+      - name: Extract version
         run: |
           TAG=${GITHUB_REF#refs/tags/}
           VERSION=${TAG#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-
       - name: Create release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -74,16 +62,13 @@ jobs:
           - name: red_ice-x86_64-linux
           - name: red_ice-arm64-linux
           - name: red_ice-armv7-linux
-
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.name }}
           path: dist
-
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          file: dist/${{ matrix.name }}
+          files: dist/${{ matrix.name }}
