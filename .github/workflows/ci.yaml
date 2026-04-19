@@ -7,7 +7,6 @@ on:
   pull_request:
 env:
   RUST_TOOLCHAIN: stable
-  TOOLCHAIN_PROFILE: minimal
 jobs:
   rustfmt:
     name: Check Style
@@ -22,10 +21,7 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
           components: rustfmt
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
   clippy:
     name: Run Clippy
@@ -41,10 +37,7 @@ jobs:
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v2
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery -W rust-2018-idioms
+        run: cargo clippy --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery -W rust-2018-idioms
 
   test:
     name: Run Tests
@@ -80,20 +73,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
       - name: Build frontend
-        run: npm install && npm run build
         working-directory: ./frontend
+        run: bun install && bun run build
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v2
       - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all-features --all
+        run: cargo test --all-features --all
         env:
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres_test

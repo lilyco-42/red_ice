@@ -28,25 +28,22 @@ jobs:
       - name: Install cross
         run: cargo install cross
       - name: Build release
-        run: cross build --release --manifest-path Cargo.toml -p red_ice --target ${{ matrix.target }}
+        run: cross build --release -p red_ice --target ${{ matrix.target }}
+      - name: Rename binary
+        run: |
+          cp target/${{ matrix.target }}/release/red_ice-cli ${{ matrix.binary_name }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.binary_name }}
-          path: target/${{ matrix.target }}/release/red_ice-cli
+          path: ${{ matrix.binary_name }}
           retention-days: 5
 
   create-release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Extract version
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          VERSION=${TAG#v}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Create release
-        id: create_release
         uses: softprops/action-gh-release@v1
         with:
           draft: false
