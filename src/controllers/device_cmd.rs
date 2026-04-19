@@ -1,4 +1,6 @@
 #![allow(clippy::unused_async)]
+#![allow(unused_variables)]
+#![allow(clippy::missing_errors_doc)]
 use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +20,7 @@ pub struct CommandResponse {
 }
 
 #[debug_handler]
-pub async fn get_commands(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
+pub async fn get_commands(_auth: auth::JWT, _ctx: State<AppContext>) -> Result<Response> {
     format::json(serde_json::json!({
         "commands": [
             {"name": "led_on", "description": "Turn on LED"},
@@ -37,7 +39,7 @@ pub async fn send_command(
     State(ctx): State<AppContext>,
     Json(params): Json<CommandRequest>,
 ) -> Result<Response> {
-    let user = UserModel::find_by_pid(&ctx.db, &auth.claims.pid).await?;
+    let _user = UserModel::find_by_pid(&ctx.db, &auth.claims.pid).await?;
 
     let response = match params.command.as_str() {
         "led_on" => CommandResponse {
