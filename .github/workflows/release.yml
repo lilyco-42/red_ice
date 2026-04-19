@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  build-linux:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,45 +44,8 @@ jobs:
           path: target/${{ matrix.target }}/release/red_ice-cli
           retention-days: 5
 
-  build-windows:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - target: x86_64-pc-windows-msvc
-            binary_name: red_ice-x64-windows.exe
-            zig_target: x86_64-windows
-          - target: aarch64-pc-windows-msvc
-            binary_name: red_ice-arm64-windows.exe
-            zig_target: aarch64-windows
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Zig
-        uses: mxschmitt/action-zig@v1
-        with:
-          version: 0.13.0
-
-      - name: Install cargo-zigbuild
-        run: cargo install cargo-zigbuild
-
-      - name: Build release
-        run: cargo zigbuild --release --manifest-path Cargo.toml -p red_ice --target ${{ matrix.zig_target }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.binary_name }}
-          path: target/${{ matrix.zig_target }}/release/*/red_ice*
-          retention-days: 5
-
   create-release:
-    needs: [build-linux, build-windows]
+    needs: build
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -111,8 +74,6 @@ jobs:
           - name: red_ice-x86_64-linux
           - name: red_ice-arm64-linux
           - name: red_ice-armv7-linux
-          - name: red_ice-x64-windows.exe
-          - name: red_ice-arm64-windows.exe
 
     steps:
       - name: Download artifact
