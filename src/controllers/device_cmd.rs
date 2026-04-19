@@ -18,10 +18,7 @@ pub struct CommandResponse {
 }
 
 #[debug_handler]
-pub async fn get_commands(
-    auth: auth::JWT,
-    State(ctx): State<AppContext>,
-) -> Result<Response> {
+pub async fn get_commands(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     format::json(serde_json::json!({
         "commands": [
             {"name": "led_on", "description": "Turn on LED"},
@@ -41,7 +38,7 @@ pub async fn send_command(
     Json(params): Json<CommandRequest>,
 ) -> Result<Response> {
     let user = UserModel::find_by_pid(&ctx.db, &auth.claims.pid).await?;
-    
+
     let response = match params.command.as_str() {
         "led_on" => CommandResponse {
             success: true,
@@ -68,7 +65,7 @@ pub async fn send_command(
             data: None,
         },
     };
-    
+
     format::json(response)
 }
 

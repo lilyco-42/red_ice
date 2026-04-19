@@ -1,8 +1,8 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::unnecessary_struct_initialization)]
 #![allow(clippy::unused_async)]
-use loco_rs::prelude::*;
 use axum::http::HeaderMap;
+use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::models::_entities::sensor_data::{self, ActiveModel, Entity, Model};
@@ -36,15 +36,10 @@ async fn load_item(ctx: &AppContext, id: i32) -> Result<Model> {
 }
 
 #[debug_handler]
-pub async fn list(
-    auth: auth::JWT,
-    State(ctx): State<AppContext>,
-) -> Result<Response> {
+pub async fn list(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
     let user = UserModel::find_by_pid(&ctx.db, &auth.claims.pid).await?;
     let data = Entity::find()
-        .filter(
-            sensor_data::Column::UserId.eq(user.id)
-        )
+        .filter(sensor_data::Column::UserId.eq(user.id))
         .all(&ctx.db)
         .await?;
     format::json(data)

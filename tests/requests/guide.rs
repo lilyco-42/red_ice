@@ -1,5 +1,5 @@
-use red_ice::app::App;
 use loco_rs::testing::prelude::*;
+use red_ice::app::App;
 use serial_test::serial;
 
 #[tokio::test]
@@ -14,4 +14,3 @@ async fn can_get_guides() {
     })
     .await;
 }
-

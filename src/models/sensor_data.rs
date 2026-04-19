@@ -1,5 +1,5 @@
+pub use super::_entities::sensor_data::{ActiveModel, Entity, Model};
 use sea_orm::entity::prelude::*;
-pub use super::_entities::sensor_data::{ActiveModel, Model, Entity};
 pub type SensorData = Entity;
 
 #[async_trait::async_trait]

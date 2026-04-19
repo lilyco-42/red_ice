@@ -14,9 +14,7 @@ use std::sync::OnceLock;
 pub static EMAIL_DOMAIN_RE: OnceLock<Regex> = OnceLock::new();
 
 fn get_allow_email_domain_re() -> &'static Regex {
-    EMAIL_DOMAIN_RE.get_or_init(|| {
-        Regex::new(r".").expect("Failed to compile regex")
-    })
+    EMAIL_DOMAIN_RE.get_or_init(|| Regex::new(r".").expect("Failed to compile regex"))
 }
 
 #[derive(Debug, Deserialize, Serialize)]
