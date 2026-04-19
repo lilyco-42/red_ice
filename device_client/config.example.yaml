@@ -1,0 +1,33 @@
+# Red Ice Sensor Client Configuration
+
+server:
+  # Your Red Ice server URL
+  url: "http://localhost:5150"
+  
+  # API Key from web interface (Device API tab)
+  # Get from your user account after login
+  api_key: "lo-00000000-0000-0000-0000-000000000000"
+
+device:
+  # Unique device ID
+  id: "radxa-a7-001"
+  
+  # Friendly name
+  name: "Living Room"
+  
+  # Upload interval in seconds
+  upload_interval: 60
+
+# Sensor configuration
+sensors:
+  - name: "dht22"
+    type: "temperature"
+    enabled: true
+    
+  - name: "dht22"
+    type: "humidity"
+    enabled: true
+    
+  - name: "cpu"
+    type: "cpu_temp"
+    enabled: true
