@@ -72,9 +72,8 @@ pub async fn add_with_api_key(
         None => return unauthorized("Missing API key"),
     };
 
-    let key = match key {
-        Ok(k) => k,
-        Err(_) => return unauthorized("Invalid API key header"),
+    let Ok(key) = key else {
+        return unauthorized("Invalid API key header");
     };
 
     let user = UserModel::find_by_api_key(&ctx.db, &key).await?;
@@ -98,9 +97,8 @@ pub async fn add_batch_with_api_key(
         None => return unauthorized("Missing API key"),
     };
 
-    let key = match key {
-        Ok(k) => k,
-        Err(_) => return unauthorized("Invalid API key header"),
+    let Ok(key) = key else {
+        return unauthorized("Invalid API key header");
     };
 
     let user = UserModel::find_by_api_key(&ctx.db, &key).await?;
